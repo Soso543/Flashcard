@@ -50,6 +50,32 @@ function init() {
             alert("This shared link appears to be invalid or corrupted.");
         }
     }
+    // Inside your init() function:
+    else if (sharedData) {
+        try {
+            // Un-compress the data
+            const decompressedString = LZString.decompressFromEncodedURIComponent(sharedData);
+            
+            // Fallback for older links you generated before we added compression
+            let finalString = decompressedString;
+            if (!decompressedString) {
+                finalString = decodeURIComponent(atob(sharedData));
+            }
+
+            const decodedData = JSON.parse(finalString);
+            
+            if (Array.isArray(decodedData) && decodedData.length > 0) {
+                if(confirm("Import shared flashcards? This will replace your current cards.")) {
+                    flashcards = decodedData;
+                    saveToStorage();
+                }
+            }
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } catch (e) {
+            console.error("Failed to parse shared data", e);
+            alert("This shared link appears to be invalid or too large.");
+        }
+    }
 
     renderCardList();
     updateReviseButtonStatus();
@@ -223,7 +249,7 @@ shareAppBtn.addEventListener('click', () => {
     copyToClipboard(baseUrl, "App link copied! Friends will start with an empty deck.");
 });
 
-// Scenario 2: Share App + Flashcards
+// Scenario 2: Share App + Flashcards (Compressed)
 shareCardsBtn.addEventListener('click', () => {
     if (flashcards.length === 0) {
         return alert("You don't have any cards to share yet!");
@@ -231,9 +257,14 @@ shareCardsBtn.addEventListener('click', () => {
 
     const baseUrl = window.location.href.split('?')[0];
     
-    // Convert flashcards to a string, encode it safely for URLs, and compress it into base64
-    const dataString = btoa(encodeURIComponent(JSON.stringify(flashcards)));
+    // Compress the data specifically for URLs
+    const compressedData = LZString.compressToEncodedURIComponent(JSON.stringify(flashcards));
     
-    const shareUrl = `${baseUrl}?data=${dataString}`;
-    copyToClipboard(shareUrl, "Card link copied! Your friends will see exactly what you created.");
+    // Check if it's still too long (over ~2000 chars)
+    if (compressedData.length > 2000) {
+        alert("Warning: Your deck is very large. The link might be too long for some browsers to open.");
+    }
+    
+    const shareUrl = `${baseUrl}?data=${compressedData}`;
+    copyToClipboard(shareUrl, "Card link copied! It has been compressed for sharing.");
 });
