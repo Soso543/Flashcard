@@ -32,26 +32,8 @@ function init() {
     const urlParams = new URLSearchParams(window.location.search);
     const sharedData = urlParams.get('data');
 
-    if (sharedData) {
-        try {
-            // Unpack the data from the URL
-            const decodedData = JSON.parse(decodeURIComponent(atob(sharedData)));
-            
-            if (Array.isArray(decodedData) && decodedData.length > 0) {
-                if(confirm("Import shared flashcards? This will replace your current cards.")) {
-                    flashcards = decodedData;
-                    saveToStorage();
-                }
-            }
-            // Clean up the URL so it looks normal again
-            window.history.replaceState({}, document.title, window.location.pathname);
-        } catch (e) {
-            console.error("Failed to parse shared data", e);
-            alert("This shared link appears to be invalid or corrupted.");
-        }
-    }
     // Inside your init() function:
-    else if (sharedData) {
+    if (sharedData) {
         try {
             // Un-compress the data
             const decompressedString = LZString.decompressFromEncodedURIComponent(sharedData);
