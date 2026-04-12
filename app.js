@@ -324,8 +324,7 @@ shareCardsBtn.addEventListener('click', async () => {
             timestamp: new Date()
         });
 
-        // This forces http to become https and removes any URL parameters
-        const baseUrl = window.location.href.split('?')[0].replace("http://", "https://");
+        const baseUrl = window.location.href.split('?')[0];
         const shareUrl = `${baseUrl}?deck=${docRef.id}`;
         
         navigator.clipboard.writeText(shareUrl);
