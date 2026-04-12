@@ -319,12 +319,14 @@ shareCardsBtn.addEventListener('click', async () => {
     shareCardsBtn.disabled = true;
 
     try {
+        // Upload to Firebase
         const docRef = await addDoc(collection(db, "shared_decks"), {
             cards: cardsToShare,
             timestamp: new Date()
         });
 
-        const baseUrl = window.location.href.split('?')[0];
+        // Create the new short link AND force it to be secure
+        const baseUrl = window.location.href.split('?')[0].replace("http://", "https://");
         const shareUrl = `${baseUrl}?deck=${docRef.id}`;
         
         navigator.clipboard.writeText(shareUrl);
