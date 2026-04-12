@@ -107,50 +107,60 @@ function saveToStorage() {
 // ==========================================
 cardForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const folderName = folderInput.value.trim() || 'General';
     const q = questionInput.value.trim();
     const img = imageInput.value.trim();
     const a = answerInput.value.trim();
 
-    // Enforce length limits just in case HTML bypasses it
-    if (q.length > 200 || a.length > 200) {
-        return alert("Questions and answers must be under 200 characters.");
-    }
-
+    if (q.length > 200 || a.length > 200) return alert("Text too long!");
     if (!q || !a) return;
 
     if (editModeId) {
         const cardIndex = flashcards.findIndex(card => card.id === editModeId);
         if (cardIndex > -1) {
-            flashcards[cardIndex] = { id: editModeId, folder: folderName, question: q, image: img, answer: a };
+            // Keep the existing folder during an edit
+            const existingFolder = flashcards[cardIndex].folder;
+            flashcards[cardIndex] = { ...flashcards[cardIndex], question: q, image: img, answer: a };
         }
         submitBtn.textContent = 'Add Card';
         editModeId = null;
     } else {
-        flashcards.push({ id: Date.now(), folder: folderName, question: q, image: img, answer: a });
+        // NEW CARDS: Set folder to null and selected to false by default
+        flashcards.push({ 
+            id: Date.now(), 
+            folder: null, 
+            question: q, 
+            image: img, 
+            answer: a,
+            selected: false 
+        });
     }
 
     saveToStorage();
     renderCardList();
     cardForm.reset();
-    folderInput.value = folderName; // Keep same folder active for rapid entry
     questionInput.focus();
 });
 
 function updateFolderDropdowns() {
-    const folders = [...new Set(flashcards.map(c => c.folder || 'General'))];
+    // Get unique folders, excluding 'null'
+    const folders = [...new Set(flashcards.map(c => c.folder).filter(f => f !== null))];
     
-    // Update Autocomplete
-    folderList.innerHTML = folders.map(f => `<option value="${f}">`).join('');
+    const filterVal = folderFilter.value;
     
-    // Update Filter
-    const currentFilter = folderFilter.value;
-    folderFilter.innerHTML = `<option value="all">All Folders</option>` + 
+    // Fill the top filter dropdown
+    folderFilter.innerHTML = `<option value="all">All Cards</option>` + 
+        `<option value="Uncategorized">Uncategorized</option>` +
         folders.map(f => `<option value="${f}">${f}</option>`).join('');
     
-    if (folders.includes(currentFilter) || currentFilter === 'all') {
-        folderFilter.value = currentFilter;
-    }
+    // Fill the "Move to Folder" dropdown in the Bulk Bar
+    const moveSelect = document.getElementById('move-to-folder-select');
+    moveSelect.innerHTML = `
+        <option value="">Move to Folder...</option>
+        <option value="new">+ Create New Folder</option>
+        <option value="Uncategorized">Remove from Folder</option>
+        ` + folders.map(f => `<option value="${f}">${f}</option>`).join('');
+
+    folderFilter.value = filterVal;
 }
 
 folderFilter.addEventListener('change', renderCardList);
@@ -160,25 +170,33 @@ function renderCardList() {
     cardGrid.innerHTML = '';
     
     const filterVal = folderFilter.value;
-    const cardsToRender = filterVal === 'all' ? flashcards : flashcards.filter(c => (c.folder || 'General') === filterVal);
+    // If filter is "all", show everything. Otherwise, match the folder name.
+    const cardsToRender = filterVal === 'all' 
+        ? flashcards 
+        : flashcards.filter(c => (c.folder || "Uncategorized") === filterVal);
 
     cardsToRender.forEach(card => {
         const cardEl = document.createElement('div');
-        cardEl.className = 'mini-card';
+        // Add a 'selected' class if the card is checked
+        cardEl.className = `mini-card ${card.selected ? 'selected' : ''}`;
         cardEl.innerHTML = `
-            <div>
-                <span class="folder-badge">${card.folder || 'General'}</span>
+            <div class="card-selector">
+                <input type="checkbox" ${card.selected ? 'checked' : ''} onchange="toggleSelect(${card.id})">
+            </div>
+            <div class="card-content">
+                <span class="folder-badge">${card.folder || 'Uncategorized'}</span>
                 <strong>Q: ${card.question}</strong>
-                ${card.image ? `<img src="${card.image}" alt="thumb" style="max-width:100%; height:80px; object-fit:cover; border-radius:4px; margin-top:0.5rem;">` : ''}
+                ${card.image ? `<img src="${card.image}" style="width:100%; height:80px; object-fit:cover; margin-top:5px;">` : ''}
                 <p>A: ${card.answer}</p>
             </div>
             <div class="card-actions">
-                <button class="edit-btn" onclick="editCard(${card.id})">Edit</button>
+                <button onclick="editCard(${card.id})">Edit</button>
                 <button class="delete-btn" onclick="deleteCard(${card.id})">Delete</button>
             </div>
         `;
         cardGrid.appendChild(cardEl);
     });
+    updateBulkBar(); // Update the bottom bar visibility
 }
 
 // Attach these to the window object so the inline HTML onclick works inside a Module
@@ -362,6 +380,68 @@ importInput.addEventListener('change', (e) => {
     importInput.value = ''; // Reset input so you can import the same file again if needed
 });
 
+// Function to check/uncheck a card
+window.toggleSelect = (id) => {
+    const card = flashcards.find(c => c.id === id);
+    if (card) card.selected = !card.selected;
+    renderCardList();
+};
+
+// Function to show/hide the bottom blue bar
+function updateBulkBar() {
+    const selectedCards = flashcards.filter(c => c.selected);
+    const bar = document.getElementById('bulk-action-bar');
+    const countEl = document.getElementById('selected-count');
+    
+    if (selectedCards.length > 0) {
+        bar.classList.remove('hidden');
+        countEl.textContent = `${selectedCards.length} cards selected`;
+    } else {
+        bar.classList.add('hidden');
+    }
+}
+
+// Logic for the Folder Dropdown in the Bulk Bar
+document.getElementById('move-to-folder-select').addEventListener('change', (e) => {
+    const action = e.target.value;
+    if (!action) return;
+
+    let folderName = action;
+    if (action === 'new') {
+        folderName = prompt("Enter name for the new folder:");
+        if (!folderName) {
+            e.target.value = "";
+            return;
+        }
+    }
+
+    // Apply the folder to all selected cards
+    flashcards.forEach(card => {
+        if (card.selected) {
+            card.folder = folderName;
+            card.selected = false; // Deselect after moving
+        }
+    });
+
+    saveToStorage();
+    renderCardList();
+    e.target.value = ""; // Reset the dropdown
+});
+
+// Logic for Bulk Delete
+document.getElementById('bulk-delete-btn').addEventListener('click', () => {
+    if (confirm("Delete all selected cards?")) {
+        flashcards = flashcards.filter(c => !c.selected);
+        saveToStorage();
+        renderCardList();
+    }
+});
+
+// Logic for Cancel Button
+document.getElementById('cancel-selection-btn').addEventListener('click', () => {
+    flashcards.forEach(c => c.selected = false);
+    renderCardList();
+});
 
 // ==========================================
 // 8. START THE APP

@@ -40,40 +40,39 @@
           <form id="card-form">
             <input
               type="text"
-              id="folder-input"
-              list="folder-list"
-              placeholder="Folder (e.g., Math)"
-              required
-              autocomplete="off"
-              maxlength="50"
-            />
-            <datalist id="folder-list"></datalist>
-
-            <input
-              type="text"
               id="question-input"
-              placeholder="Enter question (Max 200 chars)..."
+              placeholder="Question (Max 200)..."
               required
-              autocomplete="off"
               maxlength="200"
             />
             <input
               type="url"
               id="image-input"
               placeholder="Image URL (Optional)"
-              autocomplete="off"
             />
             <input
               type="text"
               id="answer-input"
-              placeholder="Enter answer (Max 200 chars)..."
+              placeholder="Answer (Max 200)..."
               required
-              autocomplete="off"
               maxlength="200"
             />
-
             <button type="submit" id="submit-btn">Add Card</button>
           </form>
+
+          <div id="bulk-action-bar" class="hidden">
+            <span id="selected-count">0 cards selected</span>
+            <div class="bulk-buttons">
+              <select id="move-to-folder-select">
+                <option value="">Move to Folder...</option>
+                <option value="new">+ Create New Folder</option>
+              </select>
+              <button id="bulk-delete-btn" class="delete-btn">
+                Delete Selected
+              </button>
+              <button id="cancel-selection-btn">Cancel</button>
+            </div>
+          </div>
         </section>
 
         <section class="card-grid" id="card-grid"></section>
