@@ -40,6 +40,7 @@ const submitBtn = document.getElementById('submit-btn');
 const cardGrid = document.getElementById('card-grid');
 
 // Action Buttons
+const shareAppBtn = document.getElementById('share-app-btn');
 const shareCardsBtn = document.getElementById('share-cards-btn');
 const startReviseBtn = document.getElementById('start-revise-btn');
 const exportBtn = document.getElementById('export-btn');
@@ -442,6 +443,25 @@ document.getElementById('cancel-selection-btn').addEventListener('click', () => 
     flashcards.forEach(c => c.selected = false);
     renderCardList();
 });
+
+// 2. Add the action
+if (shareAppBtn) {
+    shareAppBtn.addEventListener('click', () => {
+        // This gets the current website URL
+        const appUrl = window.location.origin + window.location.pathname;
+        
+        // Copy to clipboard
+        navigator.clipboard.writeText(appUrl)
+            .then(() => {
+                alert("App link copied to clipboard! Share it with your friends.");
+            })
+            .catch(err => {
+                console.error('Could not copy text: ', err);
+                // Fallback for older browsers or local testing
+                alert("App Link: " + appUrl);
+            });
+    });
+}
 
 // ==========================================
 // 8. START THE APP
