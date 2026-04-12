@@ -444,25 +444,6 @@ document.getElementById('cancel-selection-btn').addEventListener('click', () => 
     renderCardList();
 });
 
-// 2. Add the action
-if (shareAppBtn) {
-    shareAppBtn.addEventListener('click', () => {
-        // This gets the current website URL
-        const appUrl = window.location.origin + window.location.pathname;
-        
-        // Copy to clipboard
-        navigator.clipboard.writeText(appUrl)
-            .then(() => {
-                alert("App link copied to clipboard! Share it with your friends.");
-            })
-            .catch(err => {
-                console.error('Could not copy text: ', err);
-                // Fallback for older browsers or local testing
-                alert("App Link: " + appUrl);
-            });
-    });
-}
-
 // ==========================================
 // 8. START THE APP
 // ==========================================
