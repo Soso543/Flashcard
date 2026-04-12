@@ -6,6 +6,20 @@
     <title>Modern Flashcards</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
+  <div class="header-actions">
+    <select id="folder-filter" class="secondary-btn">
+      <option value="all">All Folders</option>
+    </select>
+
+    <button id="export-btn" class="secondary-btn">💾 Export</button>
+    <button id="import-proxy-btn" class="secondary-btn">📂 Import</button>
+    <input type="file" id="import-input" style="display: none" accept=".json" />
+
+    <button id="share-cards-btn" class="secondary-btn">Share Cards</button>
+    <button id="start-revise-btn" class="primary-btn" disabled>
+      Start Revision
+    </button>
+  </div>
   <body>
     <div id="app">
       <main id="dashboard">
@@ -26,18 +40,38 @@
           <form id="card-form">
             <input
               type="text"
-              id="question-input"
-              placeholder="Enter question..."
+              id="folder-input"
+              list="folder-list"
+              placeholder="Folder (e.g., Math)"
               required
+              autocomplete="off"
+              maxlength="50"
+            />
+            <datalist id="folder-list"></datalist>
+
+            <input
+              type="text"
+              id="question-input"
+              placeholder="Enter question (Max 200 chars)..."
+              required
+              autocomplete="off"
+              maxlength="200"
+            />
+            <input
+              type="url"
+              id="image-input"
+              placeholder="Image URL (Optional)"
               autocomplete="off"
             />
             <input
               type="text"
               id="answer-input"
-              placeholder="Enter answer..."
+              placeholder="Enter answer (Max 200 chars)..."
               required
               autocomplete="off"
+              maxlength="200"
             />
+
             <button type="submit" id="submit-btn">Add Card</button>
           </form>
         </section>
@@ -65,8 +99,6 @@
         </div>
       </main>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
-
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
   </body>
 </html>
