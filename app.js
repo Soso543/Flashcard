@@ -40,7 +40,6 @@ const submitBtn = document.getElementById('submit-btn');
 const cardGrid = document.getElementById('card-grid');
 
 // Action Buttons
-const shareAppBtn = document.getElementById('share-app-btn');
 const shareCardsBtn = document.getElementById('share-cards-btn');
 const startReviseBtn = document.getElementById('start-revise-btn');
 const exportBtn = document.getElementById('export-btn');
