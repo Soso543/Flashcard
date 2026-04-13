@@ -279,7 +279,6 @@ function loadCurrentRevisionCard() {
     const card = revisionQueue[currentReviseIndex];
     reviseQuestion.textContent = card.question;
     reviseAnswer.textContent = card.answer;
-    reviseImage.classList.add('hidden');
     
     if (card.image && card.image.trim() !== "") {
         reviseImage.src = card.image;
