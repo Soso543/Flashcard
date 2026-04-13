@@ -325,7 +325,7 @@ shareCardsBtn.addEventListener('click', async () => {
     const filterVal = folderFilter.value;
     const cardsToShare = filterVal === 'all' 
         ? flashcards 
-        : flashcards.filter(c => (c.folder || 'General') === filterVal);
+        : flashcards.filter(c => (c.folder || 'Uncategorized') === filterVal);
 
     if (cardsToShare.length === 0) return alert("No cards to share!");
     
