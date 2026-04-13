@@ -183,16 +183,6 @@ input[type="text"]:focus {
     transform-style: preserve-3d;
 }
 
-/* The question Text */
-#revise-question {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: 2d5a27;
-    margin-bottom: 15px;
-    word-wrap: break-word;
-    width: 100%;
-}
-
 /*The Image */
 #revise-image {
     max-width: 100%;

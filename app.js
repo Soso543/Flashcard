@@ -283,6 +283,7 @@ function loadCurrentRevisionCard() {
     if (card.image && card.image.trim() !== "") {
         reviseImage.src = card.image;
         reviseImage.style.display = 'block';
+        reviseQuestion.style.fontSize = "1.2rem"
     } else {
         reviseImage.src = "";
         reviseImage.style.display = 'none';
