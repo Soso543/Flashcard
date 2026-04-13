@@ -260,7 +260,7 @@ document.addEventListener('keydown', (e) => {
 
 function startRevision() {
     const filterVal = folderFilter.value;
-    const cardsToRevise = filterVal === 'all' ? flashcards : flashcards.filter(c => (c.folder || 'General') === filterVal);
+    const cardsToRevise = filterVal === 'all' ? flashcards : flashcards.filter(c => (c.folder || 'Uncategorized') === filterVal);
 
     if (cardsToRevise.length === 0) return alert('No cards in this folder!');
     
