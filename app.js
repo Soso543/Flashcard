@@ -279,13 +279,14 @@ function loadCurrentRevisionCard() {
     const card = revisionQueue[currentReviseIndex];
     reviseQuestion.textContent = card.question;
     reviseAnswer.textContent = card.answer;
+    reviseImage.classList.add('hidden');
     
-    if (card.image) {
+    if (card.image && card.image.trim() !== "") {
         reviseImage.src = card.image;
-        reviseImage.classList.remove('hidden');
+        reviseImage.style.display = 'block';
     } else {
-        reviseImage.classList.add('hidden');
-        reviseImage.src = '';
+        reviseImage.src = "";
+        reviseImage.style.display = 'none';
     }
 
     progressIndicator.textContent = `Card ${currentReviseIndex + 1} of ${revisionQueue.length}`;
