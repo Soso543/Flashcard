@@ -56,6 +56,7 @@ const reviseAnswer = document.getElementById('revise-answer');
 const progressIndicator = document.getElementById('progress-indicator');
 
 
+
 // ==========================================
 // 3. INITIALIZATION & LOCAL STORAGE
 // ==========================================
@@ -201,16 +202,31 @@ function renderCardList() {
 
 // Attach these to the window object so the inline HTML onclick works inside a Module
 window.editCard = (id) => {
+    // 1. Find the specific card in your database/array
     const card = flashcards.find(c => c.id === id);
-    if (card) {
-        folderInput.value = card.folder || 'General';
-        questionInput.value = card.question;
+    if (!card) return;
+
+    // 2. Populate the form inputs with the card's current data
+    // (Ensure these variable names match what you use at the top of your app.js)
+    questionInput.value = card.question;
+    answerInput.value = card.answer;
+    if (typeof imageInput !== 'undefined') {
         imageInput.value = card.image || '';
-        answerInput.value = card.answer;
-        editModeId = id;
-        submitBtn.textContent = 'Update Card';
-        window.scrollTo(0, 0);
     }
+
+    // 3. Turn on Edit Mode
+    editModeId = id;
+
+    // 4. Update the submit button text so you know you are editing
+    // (Ensure this matches your submit button's variable name)
+    const submitBtn = document.querySelector('#card-form button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.textContent = 'Save Changes';
+    }
+
+    // 5. Scroll to the top of the page so you can see the form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    questionInput.focus();
 };
 
 window.deleteCard = (id) => {
