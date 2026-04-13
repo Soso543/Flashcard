@@ -283,9 +283,11 @@ function loadCurrentRevisionCard() {
     if (card.image && card.image.trim() !== "") {
         reviseImage.src = card.image;
         reviseImage.style.display = 'block';
+        reviseQuestion.style.fontSize = "1.5rem";
     } else {
         reviseImage.src = "";
         reviseImage.style.display = 'none';
+        reviseQuestion.style.fontSize = "1.8rem";
     }
 
     progressIndicator.textContent = `Card ${currentReviseIndex + 1} of ${revisionQueue.length}`;
