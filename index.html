@@ -15,6 +15,16 @@
     <button id="import-proxy-btn" class="secondary-btn">📂 Import</button>
     <input type="file" id="import-input" style="display: none" accept=".json" />
   </div>
+  <div class="global-controls" style="text-align: center; margin-bottom: 20px">
+    <select id="folder-filter">
+      <option value="all">All Folders</option>
+      <option value="Uncategorized">Uncategorized</option>
+    </select>
+  </div>
+
+  <div id="dashboard-view"></div>
+
+  <div id="revision-view" class="hidden"></div>
   <body>
     <div id="app">
       <main id="dashboard">

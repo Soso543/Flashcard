@@ -164,41 +164,43 @@ function updateFolderDropdowns() {
     folderFilter.value = filterVal;
 }
 
-folderFilter.addEventListener('change', renderCardList);
+const revisionView = document.getElementById('revision-view'); // We need to check if this is visible
 
-function renderCardList() {
-    updateFolderDropdowns();
-    cardGrid.innerHTML = '';
-    
-    const filterVal = folderFilter.value;
-    // If filter is "all", show everything. Otherwise, match the folder name.
-    const cardsToRender = filterVal === 'all' 
-        ? flashcards 
-        : flashcards.filter(c => (c.folder || "Uncategorized") === filterVal);
+folderFilter.addEventListener('change', (e) => {
+    const selectedFolder = e.target.value;
 
-    cardsToRender.forEach(card => {
-        const cardEl = document.createElement('div');
-        // Add a 'selected' class if the card is checked
-        cardEl.className = `mini-card ${card.selected ? 'selected' : ''}`;
-        cardEl.innerHTML = `
-            <div class="card-selector">
-                <input type="checkbox" ${card.selected ? 'checked' : ''} onchange="toggleSelect(${card.id})">
-            </div>
-            <div class="card-content">
-                <span class="folder-badge">${card.folder || 'Uncategorized'}</span>
-                <strong>Q: ${card.question}</strong>
-                ${card.image ? `<img src="${card.image}" style="width:100%; height:80px; object-fit:cover; margin-top:5px;">` : ''}
-                <p>A: ${card.answer}</p>
-            </div>
-            <div class="card-actions">
-                <button onclick="editCard(${card.id})">Edit</button>
-                <button class="delete-btn" onclick="deleteCard(${card.id})">Delete</button>
-            </div>
-        `;
-        cardGrid.appendChild(cardEl);
-    });
-    updateBulkBar(); // Update the bottom bar visibility
-}
+    // CHECK: Are we currently in the Dashboard or the Revision view?
+    if (revisionView.classList.contains('hidden')) {
+        
+        // --- WE ARE IN THE DASHBOARD ---
+        // Just update the list of cards on the screen
+        renderCardList(); 
+        
+        // If you have a function that disables the revise button for empty folders, call it here:
+        // updateReviseButtonStatus(); 
+        
+    } else {
+        
+        // --- WE ARE IN THE REVISION SCREEN ---
+        // 1. Gather the cards for the new folder
+        let newDeck = selectedFolder === 'all' 
+            ? flashcards 
+            : flashcards.filter(c => (c.folder || "Uncategorized") === selectedFolder);
+
+        // 2. Prevent switching to an empty folder
+        if (newDeck.length === 0) {
+            alert("This folder is empty! Please choose another one.");
+            // Revert dropdown back to the folder you were just studying
+            e.target.value = (currentRevisionDeck[0].folder || "Uncategorized");
+            return;
+        }
+
+        // 3. Update the revision variables and show the new card
+        currentRevisionDeck = newDeck;
+        currentIndex = 0; 
+        showNextRevisionCard();
+    }
+});
 
 // Attach these to the window object so the inline HTML onclick works inside a Module
 window.editCard = (id) => {
