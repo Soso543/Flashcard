@@ -7,16 +7,18 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <div class="header-actions">
-    <button id="export-btn" class="secondary-btn">💾 Export</button>
-    <button id="import-proxy-btn" class="secondary-btn">📂 Import</button>
-    <input type="file" id="import-input" style="display: none" accept=".json" />
-  </div>
-  <div class="global-controls" style="text-align: center; margin-bottom: 20px">
     <select id="folder-filter">
       <option value="all">All Folders</option>
       <option value="Uncategorized">Uncategorized</option>
     </select>
+    <button id="export-btn" class="secondary-btn">💾 Export</button>
+    <button id="import-proxy-btn" class="secondary-btn">📂 Import</button>
+    <input type="file" id="import-input" style="display: none" accept=".json" />
   </div>
+  <div
+    class="global-controls"
+    style="text-align: center; margin-bottom: 20px"
+  ></div>
 
   <div id="dashboard-view"></div>
 
